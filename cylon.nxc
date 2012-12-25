@@ -1,38 +1,25 @@
-// cylon.nxc
-// cylon
-// Nicholas Grasevski
+#include "alpharex.h"
+#include "alpharex.nxc"
+
+#download "Hi.rso"
+#download "Bye.rso"
+#download "IllBeBack.rso"
+
+#download "Reverse.rso"
+#download "Shoot.rso"
+
+#download "Snore.rso"
+#download "Beat.rso"
 
 /*
-  Actions:
-  follow	- when just in range
-  dance	- when button pressed
-  attack	- when in range
-  reverse turn	- when too close
-  sleep	- when dark
-  otherwise	- talk, beating heart, etc.
+#download "Sleep1.ric"
+#download "Sleep2.ric"
+#download "Heart1.ric"
+#download "Heart2.ric"
 */
 
 task main () {
-    while (1) {
-        // if button pressed
-        //   until button not pressed
-        //   dance
-        //   until button pressed
-        //   until button not pressed
-        // else if dark
-        //   sleep	- lights off, snoring
-        //   until not dark
-        // else if too close
-        //   reverse turn	- reversing sound
-        //   until not too close
-        // else if close enough
-        //   attack	- flashing light, shooting sound
-        //   until not close enough
-        // else if just in range
-        //   walk forward	- war cries
-        //   until not just in range
-        // else
-        //   do nothing or beating heart or sleep or say stuff
-        // delay
+    init();
+    for (;;) {
     }
 }

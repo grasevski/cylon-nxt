@@ -1,0 +1,77 @@
+#include "NXCDefs.h"
+#include "alpharex.h"
+
+#define ARMS OUT_A
+#define LEFT_LEG OUT_B
+#define RIGHT_LEG OUT_C
+#define LEFT_DANCE OUT_AB
+#define RIGHT_DANCE OUT_AC
+#define LEGS OUT_BC
+#define LIMBS OUT_ABC
+
+#define MOTOR_SPEED 45
+#define UTURN 180
+#define DANCE_STEP 54
+
+#define LEFT_DIRECTION 2
+#define RIGHT_DIRECTION 3
+
+const int colors[NUM_COLORS] = {SENSOR_TYPE_COLORFULL,
+    SENSOR_TYPE_COLORRED,
+    SENSOR_TYPE_COLORGREEN,
+    SENSOR_TYPE_COLORBLUE,
+    SENSOR_TYPE_COLORNONE};
+
+void init() {
+    SetSensorTouch(SENSOR_LEFT);
+    SetSensorTouch(SENSOR_RIGHT);
+    SetSensorLight(SENSOR_COLOR);
+    SetSensorUltrasonic(SENSOR_US);
+}
+
+void stopMoving() {
+    Off(LIMBS);
+}
+
+void stand() {
+    stopMoving();
+    OnFwd(LEFT_LEG, MOTOR_SPEED);
+    until (!SENSOR_LEFT_SENSOR);
+    until (SENSOR_LEFT_SENSOR);
+    Off(LEFT_LEG);
+    OnFwd(RIGHT_LEG, MOTOR_SPEED);
+    until (!SENSOR_RIGHT_SENSOR);
+    until (SENSOR_RIGHT_SENSOR);
+    Off(RIGHT_LEG);
+}
+
+void dance(const int left) {
+    stand();
+    if (left) {
+        RotateMotor(RIGHT_LEG, MOTOR_SPEED, DANCE_STEP);
+        OnFwd(LEFT_DANCE, MOTOR_SPEED);
+    } else {
+        RotateMotor(LEFT_LEG, MOTOR_SPEED, DANCE_STEP);
+        OnFwd(RIGHT_DANCE, MOTOR_SPEED);
+    }
+}
+
+void walk(const Direction direction) {
+    stand();
+    int motors = LIMBS, leg = LEFT_LEG;
+    if (direction & LEFT_DIRECTION) {
+        motors = LEFT_DANCE;
+        leg = RIGHT_LEG;
+    } else if (direction & RIGHT_DIRECTION) motors = RIGHT_DANCE;
+    RotateMotor(leg, MOTOR_SPEED, UTURN);
+    if (direction % 2) OnFwd(motors, MOTOR_SPEED);
+    else OnRev(motors, MOTOR_SPEED);
+}
+
+void setLight() {
+    SetSensorLight(SENSOR_COLOR);
+}
+
+void setColor(const Color color) {
+    SetSensorType(SENSOR_COLOR, colors[color]);
+}
