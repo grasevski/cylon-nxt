@@ -11,12 +11,10 @@
 #download "Snore.rso"
 #download "Beat.rso"
 
-/*
 #download "Sleep1.ric"
 #download "Sleep2.ric"
 #download "Heart1.ric"
 #download "Heart2.ric"
-*/
 
 task main () {
     init();
