@@ -1,6 +1,7 @@
 #include "alpharex.h"
 #include "alpharex.nxc"
 
+/*
 #download "Hi.rso"
 #download "Bye.rso"
 #download "IllBeBack.rso"
@@ -15,6 +16,7 @@
 #download "Sleep2.ric"
 #download "Heart1.ric"
 #download "Heart2.ric"
+*/
 
 task main () {
     init();
