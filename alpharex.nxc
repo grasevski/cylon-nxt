@@ -9,29 +9,21 @@
 #define LEGS OUT_BC
 #define LIMBS OUT_ABC
 
-#define MOTOR_SPEED 45
+#define MOTOR_SPEED 70
 #define UTURN 180
 #define DANCE_STEP 54
 
-#define LEFT_DIRECTION 2
-#define RIGHT_DIRECTION 3
-
-const int colors[NUM_COLORS] = {SENSOR_TYPE_COLORFULL,
-    SENSOR_TYPE_COLORRED,
-    SENSOR_TYPE_COLORGREEN,
-    SENSOR_TYPE_COLORBLUE,
-    SENSOR_TYPE_COLORNONE};
+#define LEFT_DIRECTION 1
+#define RIGHT_DIRECTION 2
 
 void init() {
+    setLight();
     SetSensorTouch(SENSOR_LEFT);
     SetSensorTouch(SENSOR_RIGHT);
-    SetSensorLight(SENSOR_COLOR);
     SetSensorUltrasonic(SENSOR_US);
 }
 
-void stopMoving() {
-    Off(LIMBS);
-}
+void stopMoving() {Off(LIMBS);}
 
 void stand() {
     stopMoving();
@@ -58,20 +50,27 @@ void dance(const int left) {
 
 void walk(const Direction direction) {
     stand();
-    int motors = LIMBS, leg = LEFT_LEG;
-    if (direction & LEFT_DIRECTION) {
-        motors = LEFT_DANCE;
-        leg = RIGHT_LEG;
-    } else if (direction & RIGHT_DIRECTION) motors = RIGHT_DANCE;
-    RotateMotor(leg, MOTOR_SPEED, UTURN);
-    if (direction % 2) OnFwd(motors, MOTOR_SPEED);
-    else OnRev(motors, MOTOR_SPEED);
+    int leg = LEFT_LEG, speed = MOTOR_SPEED;
+    if (direction & LEFT_DIRECTION) leg = RIGHT_LEG;
+    RotateMotor(leg, speed, UTURN);
+    if (direction % 2 == 0) speed = -speed;
+    if (direction & (1 >> LEFT_DIRECTION)) OnFwd(LEFT_DANCE, speed);
+    else if (direction & (1 >> RIGHT_DIRECTION)) OnFwd(RIGHT_DANCE, speed);
+    else OnFwd(LIMBS, speed);
 }
 
-void setLight() {
-    SetSensorLight(SENSOR_COLOR);
-}
+void setLight() {SetSensorLight(SENSOR_COLOR);}
 
 void setColor(const Color color) {
-    SetSensorType(SENSOR_COLOR, colors[color]);
+    switch (color) {
+        case Full: SetSensorType(SENSOR_COLOR, SENSOR_TYPE_COLORFULL);
+            break;
+        case Red: SetSensorType(SENSOR_COLOR, SENSOR_TYPE_COLORRED);
+            break;
+        case Green: SetSensorType(SENSOR_COLOR, SENSOR_TYPE_COLORGREEN);
+            break;
+        case Blue: SetSensorType(SENSOR_COLOR, SENSOR_TYPE_COLORBLUE);
+            break;
+        default: SetSensorType(SENSOR_COLOR, SENSOR_TYPE_COLORNONE);
+    }
 }

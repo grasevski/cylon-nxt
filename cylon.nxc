@@ -1,7 +1,6 @@
 #include "alpharex.h"
 #include "alpharex.nxc"
 
-/*
 #download "Hi.rso"
 #download "Bye.rso"
 #download "IllBeBack.rso"
@@ -16,10 +15,80 @@
 #download "Sleep2.ric"
 #download "Heart1.ric"
 #download "Heart2.ric"
-*/
+
+#define NUM_SOUNDS 7
+
+#define REVERSE_THRESHOLD 10
+#define SHOOT_THRESHOLD 20
+#define WALK_THRESHOLD 40
+#define SLEEP_THRESHOLD 30
+
+int boogieTime = 0;
+
+const int waitTime = 1000;
+const string sleep1 = "Sleep1.ric", sleep2 = "Sleep2.ric";
+const string heart1 = "Heart1.ric", heart2 = "Heart2.ric";
+const string hi = "Hi.rso", bye = "Bye.rso";
+const string illBeBack = "IllBeBack.rso", reverse = "Reverse.rso";
+const string shoot = "Shoot.rso", snore = "Snore.rso";
+const string beat = "Beat.rso";
+const string sounds[NUM_SOUNDS] = {
+    hi, bye, illBeBack, reverse, shoot, snore, beat
+};
+
+task toggleDance() {
+    for (;;) {
+        until (ButtonPressed(BTNCENTER, false));
+        boogieTime = 1;
+        until (!ButtonPressed(BTNCENTER, false));
+        boogieTime = 0;
+    }
+}
 
 task main () {
     init();
+    start toggleDance;
     for (;;) {
+        if (boogieTime) {
+            dance(Random(2));
+            for (int i=0; boogieTime; ++i) {
+                setColor(i % NUM_COLORS);
+                Wait(waitTime);
+            }
+            stopMoving();
+            setLight();
+        } else if (SENSOR_US_SENSOR < REVERSE_THRESHOLD) {
+            PlayFile(bye);
+            walk(2 * Random(3));
+            PlayFile(reverse);
+            until (SENSOR_US_SENSOR > REVERSE_THRESHOLD);
+            stopMoving();
+        } else if (SENSOR_US_SENSOR < SHOOT_THRESHOLD) {
+            PlayFile(illBeBack);
+            setColor(Red);
+            PlayFile(shoot);
+            setLight();
+        } else if (SENSOR_US_SENSOR < WALK_THRESHOLD) {
+            walk(Forward);
+            until (SENSOR_US_SENSOR < SHOOT_THRESHOLD || SENSOR_US_SENSOR > WALK_THRESHOLD);
+            stopMoving();
+            PlayFile(hi);
+        } else if (SENSOR_COLOR_SENSOR < SLEEP_THRESHOLD) {
+            GraphicOut(0, 0, sleep1);
+            PlayFile(snore);
+            GraphicOut(0, 0, sleep2);
+            PlayFile(snore);
+            ClearScreen();
+        } else switch (Random(3)) {
+            case 0: PlayFile(sounds[Random(NUM_SOUNDS)]);
+                break;
+            case 1: GraphicOut(0, 0, heart1);
+                PlayFile(beat);
+                GraphicOut(0, 0, heart2);
+                PlayFile(beat);
+                break;
+            default: Wait(waitTime);
+        }
+        Wait(waitTime);
     }
 }
